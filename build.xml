@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="Flex Ant Tasks Demo5" default="compileProject" basedir=".">    
+	<!--
+		 * The MIT License
+		 * Copyright (c) 2008 Yee Peng Chia <peng@hubflanger.com>
+		 * 
+		 * Permission is hereby granted, free of charge, to any person obtaining a copy
+		 * of this software and associated documentation files (the "Software"), to deal
+		 * in the Software without restriction, including without limitation the rights
+		 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+		 * copies of the Software, and to permit persons to whom the Software is
+		 * furnished to do so, subject to the following conditions:
+		 * 
+		 * The above copyright notice and this permission notice shall be included in
+		 * all copies or substantial portions of the Software.
+		 * 
+		 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+		 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+		 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+		 * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+		 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+		 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+	-->
+	<property name="FLEX_HOME" value="/usr/local/flex_sdk_3"/>
+	<property name="SRC_DIR" value="src" />
+	<property name="LIB_DIR" value="libs" />
+	<property name="DEPLOY_DIR" value="bin-debug" />
+	<property name="assetsFLA" value="fla/externalAssets.fla" />
+	<property name="compileSWF_jsfl" value="jsfl/compileSWF.jsfl" />
+	<property name="preloaderFLA" value="fla/preloaderAsset.fla" />
+	<property name="compilePreloaderSWC_jsfl" value="jsfl/compilePreloaderSWC.jsfl" />
+	
+	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+	
+	<target name="compileProject" depends="compilePreloaderSWC, compileMain, compileAssetsSWF" />
+	
+	<!-- This task compiles the Demo5.as document class using the mxmlc compiler 
+		and outputs the demo5.swf to the deploy folder -->
+	<target name="compileMain">
+		<echo>Compiles Demo5.as file and outputs demo5.swf</echo>
+		<mxmlc file="${SRC_DIR}/Demo5.as" output="${DEPLOY_DIR}/demo5.swf" 
+			actionscript-file-encoding="UTF-8" 
+			incremental="false" 
+			debug="true"
+			default-frame-rate="31"
+			default-background-color="0xCCCCCC">
+			
+		    <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+		    <source-path path-element="${FLEX_HOME}/frameworks"/>
+			<source-path path-element="${SRC_DIR}" />
+		    
+			<compiler.library-path dir="${LIB_DIR}" append="true">
+		        <include name="PreloaderAsset.swc" />
+		    </compiler.library-path>
+			
+		    <!-- Set size of output SWF file. -->
+		    <default-size width="550" height="400" />
+		</mxmlc>
+	</target>
+	
+	<!-- This task launches the compileSWF.jsfl script and compiles the Assets SWF 
+		using the Flash IDE -->
+	<target name="compileAssetsSWF" description="Compile the externalAssets SWF with the Flash IDE">
+		<echo>Flash IDE Compiler for file ${assetsFLA}</echo>
+		<echo message="|*|*|*| class cache clear | source save | compiler start |*|*|*|"/>
+		<exec executable="open">
+			<arg line="${compileSWF_jsfl} ${assetsFLA}"/>
+		</exec>
+	</target>
+	
+	<!-- This task launches the compilePreloaderSWC.jsfl script and compiles the Preloader SWC 
+		using the Flash IDE -->
+	<target name="compilePreloaderSWC" description="Compile the Preloader SWC with the Flash IDE">
+		<echo>Flash IDE Compiler for file ${preloaderFLA}</echo>
+		<echo message="|*|*|*| class cache clear | source save | compiler start |*|*|*|"/>
+		<exec executable="open">
+			<arg line="${compilePreloaderSWC_jsfl} ${preloaderFLA}"/>
+		</exec>
+	</target>
+</project>
